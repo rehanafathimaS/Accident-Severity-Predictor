@@ -22,15 +22,25 @@ col1, col2 = st.columns(2)
 
 for i, col in enumerate(feature_names):
     target_col = col1 if i % 2 == 0 else col2
+    
     if col in encoders:
         options = list(encoders[col].classes_)
-        selected = target_col.selectbox(f"Select {col}", options)
+        
+        # Labels-ah mattum professional-ah mathi irukkom
+        display_label = f"Select {col}"
+        if col == 'City':
+            display_label = "Select City / Town"
+        elif col == 'County':
+            display_label = "Select District / Region"
+            
+        selected = target_col.selectbox(display_label, options)
         user_inputs[col] = encoders[col].transform([selected])[0]
     else:
+        # Numeric values-kaga
         val = target_col.number_input(f"Enter {col}", value=0)
         user_inputs[col] = val
 
-# 3. Prediction
+# 3. Prediction logic
 if st.button("Predict Severity"):
     input_df = pd.DataFrame([user_inputs])[feature_names]
     prediction = model.predict(input_df)
